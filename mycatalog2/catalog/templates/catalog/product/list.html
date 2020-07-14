@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if category %}{{ category.name}}{% else %}Товары{% endif %}
+    {% if brand %}{{ brand.name }}Товары{% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <div class="breadcrumb"><a href="{{ category.get_absolute_urls }}">{{ category.name }}</a><a href="{{ brand.get_absolute_urls }}">/{{ brand.name }}</a></div>
+{% endblock %}
+
+{% block content %}
+    <div id="sidebar">
+        <h3>Категории</h3>
+        <ul>
+            <li {% if not category %}class="selected"{% endif %}>
+                <a href="/">All</a>
+            </li>
+            {% for c in categories %}
+                <li {% if category.slug == c.slug %}class="selected" {% endif %}>
+                    <a href="{{ c.get_absolute_urls }}">{{ c.name }}</a>
+                    
+                    {% if c == category %}
+                    {% for b in brand_by_cat %}
+                        <br>
+                        <a href="{{ b.get_absolute_urls }}">{{ b }}</a>
+                    {% endfor %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="main" class="pruduct-list">
+        <h1>{% if category %}{{ category.name }}{% else %}Товары{% endif %}</h1>
+        {% for product in products %}
+            <div class="item">
+                <a href="{{ product.get_absolute_urls }}">
+                    <img src="{% if product.image %}{{ product.image.url }}{% else %}
+                    {% static "img/no_image.png" %}{% endif %}" style="width: 200px; height: 200px"></a>
+                <a href="{{ product.get_absolute_urls }}">{{ product.name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include "pagination.html" with page=products %}
+{% endblock %}
